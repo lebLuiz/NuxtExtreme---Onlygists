@@ -1,25 +1,23 @@
-import path from "path";
+import path from 'path'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
 
-  modules: [
-    'nuxt-primevue',
-    '@nuxtjs/tailwindcss',
-    '@nuxtjs/google-fonts',
-  ],
+  modules: ['nuxt-primevue', '@nuxtjs/tailwindcss', '@nuxtjs/google-fonts'],
 
-  css: [
-    'primeicons/primeicons.css'
-  ],
+  imports: {
+    dirs: ['./composables/useMarkdown'],
+  },
+
+  css: ['primeicons/primeicons.css'],
 
   googleFonts: {
     base64: true,
-    fontsDir: "assets/fonts",
+    fontsDir: 'assets/fonts',
     overwriting: true,
     families: {
-      Inter: [300, 500, 800]
+      Inter: [300, 500, 800],
     },
   },
 
@@ -27,7 +25,7 @@ export default defineNuxtConfig({
     options: { unstyled: true },
     importPT: {
       as: 'lara',
-      from: path.resolve(__dirname, "./assets/presets/lara/")
-    }
+      from: path.resolve(__dirname, './assets/presets/lara/'),
+    },
   },
 })
