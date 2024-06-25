@@ -1,7 +1,7 @@
-CREATE TABLE
+create table
     sales (
-        id uuid PRIMARY KEY,
-        gist_id uuid REFERENCES public.gists (id),
-        customer_email VARCHAR NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp NOT NULL
+        id uuid primary key,
+        gist_id uuid references public.gists (id),
+        customer_email varchar not null,
+        created_at timestamp with time zone default current_timestamp not null
     )

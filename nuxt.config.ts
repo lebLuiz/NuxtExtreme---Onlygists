@@ -7,7 +7,7 @@ export default defineNuxtConfig({
   modules: ['nuxt-primevue', '@nuxtjs/tailwindcss', '@nuxtjs/google-fonts', '@nuxtjs/supabase'],
 
   imports: {
-    dirs: ['./composables/useMarkdown', './composables/useServices'],
+    dirs: ['./composables/useMarkdown', './composables/useServices', './composables/useLogger'],
   },
 
   css: ['primeicons/primeicons.css'],

@@ -1,13 +1,14 @@
-CREATE TABLE profiles (
-    id uuid PRIMARY KEY REFERENCES auth.users (id),
-    email VARCHAR NOT NULL,
-    username VARCHAR NOT NULL,
-    name VARCHAR NOT NULL,
-    site VARCHAR,
-    phone VARCHAR,
-    bio VARCHAR,
-    avatar_url VARCHAR NOT NULL,
-    address jsonb,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT current_timestamp NOT NULL,
-    payment_connected_account VARCHAR
-);
+create table
+    profiles (
+        id uuid primary key references auth.users (id),
+        email varchar not null,
+        username varchar not null,
+        name varchar not null,
+        site varchar,
+        phone varchar,
+        bio varchar,
+        avatar_url varchar not null,
+        address jsonb,
+        created_at timestamp with time zone default current_timestamp not null,
+        payment_connected_account varchar
+    )
