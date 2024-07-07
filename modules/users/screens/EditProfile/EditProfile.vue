@@ -4,17 +4,47 @@ import HeadlineEditLoader from '@/modules/users/components/HeadlineEdit/Loader.v
 import BasicInfoForm from '@/modules/users/components/BasicInfoForm/BasicInfoForm.vue'
 import AddressForm from '@/modules/users/components/AddressForm/AddressForm.vue'
 
+import { useUserProfileActions } from '@/modules/users/composables/useUserProfileActions/useUserProfileActions';
+import { useAddressUpdate } from '@/modules/users/composables/useAddressUpdate/useAddressUpdate';
+import { useUserUpdate } from '@/modules/users/composables/useUserUpdate/useUserUpdate';
 import { myselfKey } from '@/modules/users/composables/useMyself/useMyself';
 import type { MyselfContextProvider } from '@/modules/users/composables/useMyself/types';
 
 const { user, loading } = inject(myselfKey) as MyselfContextProvider;
+const router = useRouter();
+const { share } = useUserProfileActions();
+const { loading: addressLoading, searchZipCode, address } = useAddressUpdate({
+    user
+});
+const {
+    loading: updateLoading,
+    safeParse,
+    update,
+    errors,
+} = useUserUpdate({
+    user
+});
+
+const handleUpdateProfile = () => {
+    const isValid = safeParse().success
+
+    if (!isValid || !user.value)
+        return
+
+    user.value.address = address.value
+    update()
+}
+
+const handleZipCodeSearch = () => {
+    searchZipCode()
+}
 
 const handleShare = (username: string) => {
-    console.log(username);
+    share(username);
 };
 
 const handleNavigateToProfile = (username: string) => {
-    console.log(username);
+    router.push(`/${username}`);
 };
 </script>
 
@@ -30,10 +60,22 @@ const handleNavigateToProfile = (username: string) => {
     </HeadlineEditLoader>
 
     <WidgetDefault title="Informações básicas">
-        <BasicInfoForm />
+        <BasicInfoForm :errors="errors" v-model="user" />
     </WidgetDefault>
 
     <WidgetDefault title="Endereço" class="mt-5">
-        <AddressForm />
+        <AddressForm
+            v-model="address"
+            :loading="addressLoading"
+            @trigger-address-search="handleZipCodeSearch" />
     </WidgetDefault>
+
+    <Button
+        @click="handleUpdateProfile"
+        :loading="updateLoading"
+        class="mt-5 w-full md:w-auto"
+        label="Atualizar"
+        icon="pi pi-pencil"
+        icon-pos="right"
+    />
 </template>

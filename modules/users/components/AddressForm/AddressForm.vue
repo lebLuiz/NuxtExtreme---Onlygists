@@ -2,7 +2,7 @@
     import type { Address } from '@/modules/users/entities/Address/Address';
 
     const props = defineProps<{
-        loading: boolean;
+        loading?: boolean;
     }>()
     const emit = defineEmits<{
         (e: 'trigger-address-search'): void
@@ -29,7 +29,7 @@
                 <div class="flex flex-col gap-2 flex-1">
                     <label for="cep">
                         CEP
-                        <i v-if="props.loading" class="pi pi-spinner text-gray-500 animate-spin" />
+                        <i v-if="props?.loading" class="pi pi-spinner text-gray-500 animate-spin" />
                     </label>
                     <InputText
                         id="cep"
