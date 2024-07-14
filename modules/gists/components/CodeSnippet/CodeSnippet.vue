@@ -33,13 +33,16 @@ const registerSyntaxHighlight = async () => {
     const tree = starryNight.highlight(props.code, scope!);
 
     htmlCode.value = toHtml(tree);
-
     loading.value = false;
 }
 
-onMounted(() => {
-    registerSyntaxHighlight()
-})
+watch(
+    () => props.code,
+    () => {
+        registerSyntaxHighlight()
+    },
+    { immediate: true }
+)
 </script>
 
 <template>

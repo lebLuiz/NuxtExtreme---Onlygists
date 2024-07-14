@@ -7,6 +7,7 @@ import LazyDialogPaymentSuccess from '@/modules/payments/components/DialogPaymen
 import LazyDialogPaymentError from '@/modules/payments/components/DialogPaymentError/DialogPaymentError.vue';
 import { useSession } from '@/modules/auth/composables/useSession/useSession'
 import { myselfKey } from '@/modules/users/composables/useMyself/useMyself';
+import { useGistContent } from '@/modules/gists/composables/useGistContent/useGistContent';
 import type { MyselfContextProvider } from '@/modules/users/composables/useMyself/types';
 
 const { user } = inject(myselfKey) as MyselfContextProvider;
@@ -21,9 +22,13 @@ const isPaymentFail = ref<boolean>(false);
 const handleNavigateToGistEdit = () => {
     router.push(`/app/gist/${route.params?.id}/edit`);
 }
-const { data: gist, pending: loading } = await useLazyAsyncData('gist-detail', () => {
+const { data: gist, pending: loading } = await useAsyncData('gist-detail', () => {
     const gistId = route.params.id as string;
     return services.gists.readOne(gistId);
+})
+
+const { gistContent, loading: loadingContent } = useGistContent({
+    gist
 })
 
 onMounted(() => {
@@ -48,7 +53,11 @@ onMounted(() => {
         <PublicHeadlineEmpty v-else />
     </PublicHeadlineLoader>
 
-    <GistCodeSnippet v-if="gist" />
+    <GistCodeSnippet v-if="gist"
+        :loading="loadingContent"
+        :lang="gist.lang"
+        :code="gistContent"
+        :is-paid="gist.isPaid" />
 
     <div v-if="gist"
         class="flex flex-col md:flex-row gap-2">
