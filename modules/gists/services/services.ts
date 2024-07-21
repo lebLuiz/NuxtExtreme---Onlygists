@@ -1,69 +1,91 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 import type { Database } from '@/libs/supabase/schema'
-import type { CreateOptions, UpdateOptions } from './types'
-import { readOneAdapter, type ReadOneRow } from './adapters'
+import type { CreateOptions, ReadAllOptions, UpdateOptions } from './types'
+import { readAllAdapter, readOneAdapter, type ReadAllRow, type ReadOneRow } from './adapters'
 
 export default (client: SupabaseClient<Database>) => ({
-  async create({ title, description, price, content, lang, profileId }: CreateOptions) {
-    const id = uuidv4()
-    const isPaid = price !== 0
+    async readAll({ username, from = 0, to = 10 }: ReadAllOptions) {
+        const [totalResponse, gistsResponse] = await Promise.all([
+            client
+                .from('gists')
+                .select('profiles!inner(id, username)', { count: 'exact', head: true })
+                .eq('profiles.username', username),
 
-    await client.from('gists').insert({
-      id,
-      title,
-      description,
-      price,
-      content,
-      lang,
-      profile_id: profileId,
-      is_paid: isPaid,
-    })
+            client
+                .from('gists')
+                .select('id, title, description, is_paid, price, lang, created_at, profiles!inner(id, username)')
+                .eq('profiles.username', username)
+                .order('created_at', { ascending: true })
+                .range(from, to)
+                .returns<ReadAllRow[]>(),
+        ])
 
-    return { id }
-  },
+        return {
+            total: totalResponse.count ?? 0,
+            results: readAllAdapter(gistsResponse.data),
+        }
+    },
 
-  async readOne(id: string) {
-    const response = await client
-      .from('gists')
-      .select('id, title, description, price, is_paid, profiles (id, username)')
-      .match({ id })
-      .returns<ReadOneRow>()
-      .single()
+    async create({ title, description, price, content, lang, profileId }: CreateOptions) {
+        const id = uuidv4()
+        const isPaid = price !== 0
 
-    return readOneAdapter(response.data)
-  },
+        await client.from('gists').insert({
+            id,
+            title,
+            description,
+            price,
+            content,
+            lang,
+            profile_id: profileId,
+            is_paid: isPaid,
+        })
 
-  async readOneContent(id: string) {
-    const response = await client.from('gists').select('id, content').match({ id }).returns<ReadOneRow>().single()
+        return { id }
+    },
 
-    return readOneAdapter(response.data)
-  },
+    async readOne(id: string) {
+        const response = await client
+            .from('gists')
+            .select('id, title, description, price, is_paid, profiles (id, username)')
+            .match({ id })
+            .returns<ReadOneRow>()
+            .single()
 
-  async update(id: string, { title, description, price, content, lang }: UpdateOptions) {
-    const isPaid = price !== 0
+        return readOneAdapter(response.data)
+    },
 
-    await client
-      .from('gists')
-      .update({
-        title,
-        description,
-        price,
-        content,
-        lang,
-        is_paid: isPaid,
-      })
-      .match({
-        id,
-      })
+    async readOneContent(id: string) {
+        const response = await client.from('gists').select('id, content').match({ id }).returns<ReadOneRow>().single()
 
-    return { id }
-  },
+        return readOneAdapter(response.data)
+    },
 
-  async delete(id: string) {
-    await client.from('gists').delete().match({
-      id,
-    })
-    return { id }
-  },
+    async update(id: string, { title, description, price, content, lang }: UpdateOptions) {
+        const isPaid = price !== 0
+
+        await client
+            .from('gists')
+            .update({
+                title,
+                description,
+                price,
+                content,
+                lang,
+                is_paid: isPaid,
+            })
+            .match({
+                id,
+            })
+
+        return { id }
+    },
+
+    async delete(id: string) {
+        await client.from('gists').delete().match({
+            id,
+        })
+        return { id }
+    },
 })
