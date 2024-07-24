@@ -7,7 +7,7 @@ import WidgetCondensed from '@/modules/reports/components/Widget/Condensed/Conde
 import GistCardGroup from '@/modules/gists/components/Card/Group/Group.vue';
 import GistCardGroupLoader from '@/modules/gists/components/Card/Group/Loader.vue';
 import GistCardItem from '@/modules/gists/components/Card/Item/Item.vue';
-import { useGistsReport } from '@/modules/reports/compossables/useGistsReport/useGistsReport';
+import { useGistsReport } from '@/modules/reports/composables/useGistsReport/useGistsReport';
 import { useGistList } from '@/modules/gists/composables/useGistList/useGistList';
 import { useScroll } from '@vueuse/core'
 
@@ -58,6 +58,22 @@ const handleNavigateToDetail = (id: string) => {
 
     router.push(`/${username}/gists/${id}`);
 }
+
+defineOgImage({
+    component: 'PublicProfile',
+    props: {
+        avatarUrl: user.value?.avatarUrl,
+        author: user.value?.name,
+        bio: user.value?.bio
+    }
+})
+
+useSeoMeta({
+    title: `${user.value?.name} - @${user.value?.username}`,
+    ogTitle: `${user.value?.name} - @${user.value?.username}`,
+    description: `Veja os gists de ${user.value?.name} no onlygists`,
+    ogDescription: `Veja os gists de ${user.value?.name} no onlygists`,
+})
 </script>
 
 <template>

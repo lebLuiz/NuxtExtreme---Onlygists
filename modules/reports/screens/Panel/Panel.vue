@@ -9,7 +9,7 @@ import GistCardItem from '@/modules/gists/components/Card/Item/Item.vue';
 import { myselfKey } from '@/modules/users/composables/useMyself/useMyself';
 import type { MyselfContextProvider } from '@/modules/users/composables/useMyself/types';
 
-import { useGistsReport } from '@/modules/reports/compossables/useGistsReport/useGistsReport';
+import { useGistsReport } from '@/modules/reports/composables/useGistsReport/useGistsReport';
 import { useGistList } from '@/modules/gists/composables/useGistList/useGistList';
 import { useScroll } from '@vueuse/core'
 
