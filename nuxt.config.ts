@@ -11,6 +11,7 @@ export default defineNuxtConfig({
         '@nuxtjs/supabase',
         '@nuxtjs/color-mode',
         '@nuxtjs/seo',
+        '@unlok-co/nuxt-stripe',
     ],
 
     imports: {
@@ -25,6 +26,15 @@ export default defineNuxtConfig({
         fonts: ['Inter:400', 'Inter:700'],
     },
 
+    stripe: {
+        client: {
+            key: process.env.STRIPE_CLIENT_KEY,
+        },
+        server: {
+            key: process.env.STRIPE_SECRET_KEY,
+        },
+    },
+
     css: ['primeicons/primeicons.css'],
 
     supabase: {
@@ -32,6 +42,8 @@ export default defineNuxtConfig({
     },
 
     runtimeConfig: {
+        stripeProductId5BRL: process.env.STRIPE_PRODUCT_ID_5BRL,
+
         public: {
             nodeEnv: process.env.NODE_ENV,
             supabaseUrl: process.env.SUPABASE_URL,

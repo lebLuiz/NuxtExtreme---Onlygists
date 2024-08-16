@@ -6,35 +6,35 @@ import type { MyselfContextProvider } from './types'
 export const myselfKey = Symbol('myself') as InjectionKey<MyselfContextProvider>
 
 export function useMyself() {
-  const { logAndTrack } = useLogger()
-  const services = useServices()
-  const session = useSession()
-  const loading = ref<boolean>(true)
-  const user = ref<User>()
+    const { logAndTrack } = useLogger()
+    const services = useServices()
+    const session = useSession()
+    const loading = ref<boolean>(true)
+    const user = ref<User>()
 
-  provide<MyselfContextProvider>(myselfKey, { user, loading })
+    provide<MyselfContextProvider>(myselfKey, { user, loading })
 
-  const fetchUser = async () => {
-    loading.value = true
+    const fetchUser = async () => {
+        loading.value = true
 
-    try {
-      const response = await services.users.getMyself(session.user.value?.id!)
-      if (!response) return
+        try {
+            const response = await services.users.getMyself(session.user.value?.id!)
+            if (!response) return
 
-      user.value = response
-    } catch (error) {
-      logAndTrack(error)
-    } finally {
-      loading.value = false
+            user.value = response
+        } catch (error) {
+            logAndTrack(error)
+        } finally {
+            loading.value = false
+        }
     }
-  }
 
-  onMounted(() => {
-    fetchUser()
-  })
+    onMounted(() => {
+        fetchUser()
+    })
 
-  return {
-    loading,
-    user,
-  }
+    return {
+        loading,
+        user,
+    }
 }

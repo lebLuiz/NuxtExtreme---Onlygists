@@ -8,6 +8,7 @@ import LazyDialogPaymentError from '@/modules/payments/components/DialogPaymentE
 import { useSession } from '@/modules/auth/composables/useSession/useSession'
 import { myselfKey } from '@/modules/users/composables/useMyself/useMyself';
 import { useGistContent } from '@/modules/gists/composables/useGistContent/useGistContent';
+import { useStripeCheckout } from '@/modules/payments/composables/useStripeCheckout/useStripeCheckout';
 import type { MyselfContextProvider } from '@/modules/users/composables/useMyself/types';
 
 const { user } = inject(myselfKey) as MyselfContextProvider;
@@ -30,6 +31,20 @@ const { data: gist, pending: loading } = await useAsyncData('gist-detail', () =>
 const { gistContent, loading: loadingContent } = useGistContent({
     gist
 })
+const { checkoutUrl, createCheckoutUrl } = useStripeCheckout()
+
+const handlePay = async () => {
+    await createCheckoutUrl({
+        username: route.params.username as string,
+        gistId: route.params.id as string,
+        price: String(gist.value?.price!),
+    })
+
+    if (!checkoutUrl.value)
+        return;
+
+    window.location.href = checkoutUrl.value;
+}
 
 onMounted(() => {
     const { success_payment, fail_payment } = route.query;
@@ -76,11 +91,12 @@ useSeoMeta({
 
     <div v-if="gist"
         class="flex flex-col md:flex-row gap-2">
-        <Button v-if="user?.username !== route.params?.username"
-            :label="`Comprar por 10`"
+        <Button v-if="gist && user?.username !== route.params?.username"
+            :label="`Comprar por ${gist.price}`"
             class="mt-5 w-full md:w-auto"
             icon-pos="right"
-            icon="pi pi-shopping-bag" />
+            icon="pi pi-shopping-bag"
+            @click="handlePay" />
 
         <Button v-if="session.isLogged() && user?.username === route.params?.username"
             label="Editar este gist"
