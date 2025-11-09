@@ -7,6 +7,7 @@ export interface AuthContext {
 
 export default defineEventHandler(async (event) => {
     const url = getRequestURL(event)
+    const user = await serverSupabaseUser(event)
 
     const isWebhook = url.pathname.startsWith('/webhooks')
     if (isWebhook) return
@@ -14,7 +15,6 @@ export default defineEventHandler(async (event) => {
     const isApiCall = url.pathname.startsWith('/api')
     if (!isApiCall) return
 
-    const user = await serverSupabaseUser(event)
     const contextAuth: AuthContext = {
         user,
         isAuthenticated: !!user,
